@@ -1,6 +1,7 @@
 package main
 
 import animations "../animations"
+import "core:math/noise"
 import rl "vendor:raylib"
 
 Direction :: enum {
@@ -8,6 +9,27 @@ Direction :: enum {
 	Down,
 	Left,
 	Right,
+}
+
+create_map_noise_grid :: proc() -> [dynamic]f32 {
+	levelWidth :: 8
+	levelHeight :: 8
+
+	seed := i64(12345)
+	scale := 0.2
+
+	grid: [dynamic]f32
+
+	for i := 0; i < levelHeight * levelWidth; i += 1 {
+		x := i % levelWidth
+		y := i / levelWidth
+
+		value := noise.noise_2d(seed, noise.Vec2{f64(x) * scale, f64(y) * scale})
+
+		append(&grid, value)
+	}
+
+	return grid
 }
 
 main :: proc() {
@@ -20,7 +42,19 @@ main :: proc() {
 	player_direction: Direction
 	player_is_moving: bool
 
-  animations.init()
+	animations.init()
+	grid := create_map_noise_grid()
+  defer delete(grid)
+
+	for i := 0; i < len(grid); i += 1 {
+    if grid[i] < -0.2 {
+      // water
+    } else if grid[i] < 0.4 {
+      // grass
+    } else {
+      // mountain
+    }
+	}
 
 	current_anim := animations.player_idle
 
