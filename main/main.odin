@@ -1,35 +1,15 @@
 package main
 
-import animations "../animations"
-import "core:math/noise"
 import rl "vendor:raylib"
+
+import animations "../animations"
+import level "../level"
 
 Direction :: enum {
 	Up,
 	Down,
 	Left,
 	Right,
-}
-
-create_map_noise_grid :: proc() -> [dynamic]f32 {
-	levelWidth :: 8
-	levelHeight :: 8
-
-	seed := i64(12345)
-	scale := 0.2
-
-	grid: [dynamic]f32
-
-	for i := 0; i < levelHeight * levelWidth; i += 1 {
-		x := i % levelWidth
-		y := i / levelWidth
-
-		value := noise.noise_2d(seed, noise.Vec2{f64(x) * scale, f64(y) * scale})
-
-		append(&grid, value)
-	}
-
-	return grid
 }
 
 main :: proc() {
@@ -43,19 +23,10 @@ main :: proc() {
 	player_is_moving: bool
 
 	animations.init()
-	grid := create_map_noise_grid()
-  defer delete(grid)
+	level_grid := level.create_level_grid()
+	defer delete(level_grid)
 
-	for i := 0; i < len(grid); i += 1 {
-    if grid[i] < -0.2 {
-      // water
-    } else if grid[i] < 0.4 {
-      // grass
-    } else {
-      // mountain
-    }
-	}
-
+	level.draw_level(level_grid)
 	current_anim := animations.player_idle
 
 	for !rl.WindowShouldClose() {
@@ -129,6 +100,7 @@ main :: proc() {
 		}
 
 		player_pos += player_vel * rl.GetFrameTime()
+
 
 		animations.update_animation(&current_anim)
 		animations.draw_animation(current_anim, player_pos, player_flip)
