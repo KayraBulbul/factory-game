@@ -81,7 +81,7 @@ main :: proc() {
 			player_flip = false
 		}
 
-		// diagnol speed normalisation probably done really shittly and not even accurate tbh
+		// diagonal speed normalisation probably done really shittly and not even accurate tbh
 		if player_vel.x != 0 && player_vel.y != 0 {
 			if player_vel.x < 0 {
 				player_vel.x = -250
