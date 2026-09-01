@@ -1,11 +1,17 @@
 package level
 
 import "core:math/noise"
+import rl "vendor:raylib"
 
-Tile :: enum {
+TileType :: enum {
 	Water,
 	Grass,
 	Mountain,
+}
+
+Tile :: struct {
+	texture: rl.Texture2D,
+	type:    TileType,
 }
 
 Level :: struct {
@@ -22,6 +28,9 @@ create_level_grid :: proc(width, height: int, seed: i64) -> Level {
 	}
 
 	noise_scale: f64 = 0.05
+	water := rl.LoadTexture("../assets/water.png")
+	grass := rl.LoadTexture("../assets/grass.png")
+	mountain := rl.LoadTexture("../assets/mountain.png")
 
 	for y in 0 ..< height {
 		for x in 0 ..< width {
@@ -29,14 +38,17 @@ create_level_grid :: proc(width, height: int, seed: i64) -> Level {
 
 			tile: Tile
 			if value < -0.15 {
-				tile = .Water
+				tile.type = .Water
+				tile.texture = water
 			} else if value < 0.40 {
-				tile = .Grass
+				tile.type = .Grass
+				tile.texture = grass
 			} else {
-				tile = .Mountain
+				tile.type = .Mountain
+				tile.texture = mountain
 			}
 
-      // Converts 2D position to 1D array
+			// Converts 2D position to 1D array
 			level.tiles[y * width + x] = tile
 		}
 	}
@@ -45,23 +57,23 @@ create_level_grid :: proc(width, height: int, seed: i64) -> Level {
 }
 
 draw_level :: proc(level: ^Level) {
-  TILE_SIZE :: 32
+	TILE_SIZE :: 16
 
-  for y in 0..<level.height {
-    for x in 0..<level.width {
-      tile := level.tiles[y * level.width + x]
+	for y in 0 ..< level.height {
+		for x in 0 ..< level.width {
+			tile := level.tiles[y * level.width + x]
 
-      screen_x := x * TILE_SIZE
-      screen_y := y * TILE_SIZE
+			world_x := x * TILE_SIZE
+			world_y := y * TILE_SIZE
 
-      switch tile {
-      case .Water:
-        // Water drawTexture
-      case .Grass:
-        // Grass drawTexture
-      case .Mountain:
-        // Mountain drawTexture
-      }
-    }
-  }
+			switch tile.type {
+			case .Water:
+				rl.DrawTextureEx(tile.texture, {f32(world_x), f32(world_y)}, 0, 4.0, rl.WHITE)
+			case .Grass:
+				rl.DrawTextureEx(tile.texture, {f32(world_x), f32(world_y)}, 0, 4.0, rl.WHITE)
+			case .Mountain:
+				rl.DrawTextureEx(tile.texture, {f32(world_x), f32(world_y)}, 0, 4.0, rl.WHITE)
+			}
+		}
+	}
 }
