@@ -21,13 +21,10 @@ main :: proc() {
 	player_flip: bool
 	player_direction: Direction
 	player_is_moving: bool
+  current_anim: animations.Animation
 
 	animations.init()
-	level_grid := level.create_level_grid()
-	defer delete(level_grid)
-
-	level.draw_level(level_grid)
-	current_anim := animations.player_idle
+  level_grid := level.create_level_grid(5, 5, 12345)
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
@@ -101,9 +98,9 @@ main :: proc() {
 
 		player_pos += player_vel * rl.GetFrameTime()
 
-
 		animations.update_animation(&current_anim)
 		animations.draw_animation(current_anim, player_pos, player_flip)
+    level.draw_level(&level_grid)
 
 		rl.EndDrawing()
 	}
