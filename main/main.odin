@@ -21,10 +21,10 @@ main :: proc() {
 	player_flip: bool
 	player_direction: Direction
 	player_is_moving: bool
-  current_anim: animations.Animation
+	current_anim: animations.Animation
 
 	animations.init()
-  level_grid := level.create_level_grid(5, 5, 12345)
+	level_grid := level.create_level_grid(5, 5, 12345)
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
@@ -99,9 +99,19 @@ main :: proc() {
 		player_pos += player_vel * rl.GetFrameTime()
 
 
-    level.draw_level(&level_grid)
+		camera := rl.Camera2D {
+			offset = {f32(rl.GetScreenWidth() / 2), f32(rl.GetScreenHeight() / 2)},
+			zoom   = 4,
+		}
+
+
+		rl.BeginMode2D(camera)
+		level.draw_level(&level_grid)
+		rl.EndMode2D()
+
 		animations.update_animation(&current_anim)
 		animations.draw_animation(current_anim, player_pos, player_flip)
+
 
 		rl.EndDrawing()
 	}
