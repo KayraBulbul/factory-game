@@ -98,9 +98,10 @@ main :: proc() {
 
 		player_pos += player_vel * rl.GetFrameTime()
 
+
+    level.draw_level(&level_grid)
 		animations.update_animation(&current_anim)
 		animations.draw_animation(current_anim, player_pos, player_flip)
-    level.draw_level(&level_grid)
 
 		rl.EndDrawing()
 	}
