@@ -77,6 +77,7 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 		}
 	}
 
+  // Forces 7x7 grass land on spawn after 3 seed retries
 	if !pass {
 		mid_x := width / 2
 		mid_y := height / 2
