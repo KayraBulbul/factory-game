@@ -66,14 +66,7 @@ draw_level :: proc(level: ^Level) {
 			world_x := x * TILE_SIZE
 			world_y := y * TILE_SIZE
 
-			switch tile.type {
-			case .Water:
-				rl.DrawTextureEx(tile.texture, {f32(world_x), f32(world_y)}, 0, 4.0, rl.WHITE)
-			case .Grass:
-				rl.DrawTextureEx(tile.texture, {f32(world_x), f32(world_y)}, 0, 4.0, rl.WHITE)
-			case .Mountain:
-				rl.DrawTextureEx(tile.texture, {f32(world_x), f32(world_y)}, 0, 4.0, rl.WHITE)
-			}
+			rl.DrawTextureEx(tile.texture, {f32(world_x), f32(world_y)}, 0, 4.0, rl.WHITE)
 		}
 	}
 }
