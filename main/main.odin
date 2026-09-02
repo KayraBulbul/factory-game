@@ -16,8 +16,8 @@ main :: proc() {
 	rl.InitWindow(1920, 1080, "Factory Game")
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 	rl.SetTargetFPS(240)
-	player_pos := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
-	camera_pos := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
+	player_pos: rl.Vector2
+	camera_pos: rl.Vector2
 	player_vel: rl.Vector2
 	player_flip: bool
 	player_direction: Direction
@@ -26,7 +26,8 @@ main :: proc() {
 	camera_attached := true
 
 	animations.init()
-	level_grid := level.create_level_grid(128, 128, 12346)
+  seed: i64 = 12345
+	level_grid := level.create_level_grid(128, 128, &seed)
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
@@ -35,19 +36,19 @@ main :: proc() {
 
 		// Player Movement
 		if rl.IsKeyDown(.LEFT) {
-			player_vel.x = -200
+			player_vel.x = -100
 			player_direction = .Left
 		} else if rl.IsKeyDown(.RIGHT) {
-			player_vel.x = 200
+			player_vel.x = 100
 			player_direction = .Right
 		} else {
 			player_vel.x = 0
 		}
 		if rl.IsKeyDown(.UP) {
-			player_vel.y = -200
+			player_vel.y = -100
 			player_direction = .Up
 		} else if rl.IsKeyDown(.DOWN) {
-			player_vel.y = 200
+			player_vel.y = 100
 			player_direction = .Down
 		} else {
 			player_vel.y = 0
@@ -55,14 +56,14 @@ main :: proc() {
 
 		// Camera Movement
 		if rl.IsKeyDown(.A) {
-			camera_pos.x += -200 * rl.GetFrameTime()
+			camera_pos.x += -100 * rl.GetFrameTime()
 		} else if rl.IsKeyDown(.D) {
-			camera_pos.x += 200 * rl.GetFrameTime()
+			camera_pos.x += 100 * rl.GetFrameTime()
 		}
 		if rl.IsKeyDown(.W) {
-			camera_pos.y += -200 * rl.GetFrameTime()
+			camera_pos.y += -100 * rl.GetFrameTime()
 		} else if rl.IsKeyDown(.S) {
-			camera_pos.y += 200 * rl.GetFrameTime()
+			camera_pos.y += 100 * rl.GetFrameTime()
 		}
 
 		// Camera attached toggle
@@ -108,15 +109,15 @@ main :: proc() {
 		// diagonal speed normalisation probably done really shittly and not even accurate tbh
 		if player_vel.x != 0 && player_vel.y != 0 {
 			if player_vel.x < 0 {
-				player_vel.x = -150
+				player_vel.x = -100
 			} else {
-				player_vel.x = 150
+				player_vel.x = 100
 			}
 
 			if player_vel.y < 0 {
-				player_vel.y = -150
+				player_vel.y = -100
 			} else {
-				player_vel.y = 150
+				player_vel.y = 100
 			}
 		}
 
