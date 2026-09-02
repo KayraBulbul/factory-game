@@ -32,6 +32,7 @@ main :: proc() {
 		rl.ClearBackground({110, 184, 168, 255})
 
 
+    // Player Movement
 		if rl.IsKeyDown(.LEFT) {
 			player_vel.x = -200
 			player_direction = .Left
@@ -41,7 +42,6 @@ main :: proc() {
 		} else {
 			player_vel.x = 0
 		}
-
 		if rl.IsKeyDown(.UP) {
 			player_vel.y = -200
 			player_direction = .Up
@@ -52,12 +52,12 @@ main :: proc() {
 			player_vel.y = 0
 		}
 
+    // Camera Movement
 		if rl.IsKeyDown(.A) {
 			camera_pos.x += -200 * rl.GetFrameTime()
 		} else if rl.IsKeyDown(.D) {
 			camera_pos.x += 200 * rl.GetFrameTime()
 		}
-
 		if rl.IsKeyDown(.W) {
 			camera_pos.y += -200 * rl.GetFrameTime()
 		} else if rl.IsKeyDown(.S) {
