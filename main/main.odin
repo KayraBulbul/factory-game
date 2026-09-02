@@ -65,7 +65,7 @@ main :: proc() {
 			camera_pos.y += 200 * rl.GetFrameTime()
 		}
 
-    // Camera attached toggle
+		// Camera attached toggle
 		if rl.IsKeyPressed(.F) {
 			if camera_attached {
 				camera_attached = false
