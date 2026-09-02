@@ -26,7 +26,7 @@ main :: proc() {
 	camera_attached := true
 
 	animations.init()
-  seed: i64 = 12345
+	seed: i64 = 12345
 	level_grid := level.create_level_grid(128, 128, &seed)
 
 	for !rl.WindowShouldClose() {
