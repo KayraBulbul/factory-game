@@ -37,10 +37,10 @@ create_level_grid :: proc(width, height: int, seed: i64) -> Level {
 			value := noise.noise_2d(seed, [2]f64{f64(x) * noise_scale, f64(y) * noise_scale})
 
 			tile: Tile
-			if value < -0.15 {
+			if value < -0.10 {
 				tile.type = .Water
 				tile.texture = water
-			} else if value < 0.40 {
+			} else if value < 0.70 {
 				tile.type = .Grass
 				tile.texture = grass
 			} else {
@@ -66,7 +66,7 @@ draw_level :: proc(level: ^Level) {
 			world_x := x * TILE_SIZE
 			world_y := y * TILE_SIZE
 
-			rl.DrawTextureEx(tile.texture, {f32(world_x), f32(world_y)}, 0, 4.0, rl.WHITE)
+			rl.DrawTextureEx(tile.texture, {f32(world_x), f32(world_y)}, 0, 1.0, rl.WHITE)
 		}
 	}
 }

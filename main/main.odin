@@ -16,8 +16,8 @@ main :: proc() {
 	rl.InitWindow(1920, 1080, "Factory Game")
 	// rl.SetWindowState({.WINDOW_RESIZABLE})
 	rl.SetTargetFPS(240)
-	player_pos := rl.Vector2{f32(rl.GetScreenWidth() / 2), f32(rl.GetScreenHeight() / 2)}
-	camera_pos := rl.Vector2{f32(rl.GetScreenWidth() / 2), f32(rl.GetScreenHeight() / 2)}
+	player_pos := rl.Vector2{0, 0}
+	camera_pos := rl.Vector2{0, 0}
 	player_vel: rl.Vector2
 	player_flip: bool
 	player_direction: Direction
@@ -25,7 +25,7 @@ main :: proc() {
 	current_anim: animations.Animation
 
 	animations.init()
-	level_grid := level.create_level_grid(5, 5, 12345)
+	level_grid := level.create_level_grid(128, 128, 12346)
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
@@ -112,7 +112,6 @@ main :: proc() {
 		player_pos += player_vel * rl.GetFrameTime()
 
 		camera := rl.Camera2D {
-			offset = {f32(rl.GetScreenWidth() / 2), f32(rl.GetScreenHeight() / 2)},
 			target = camera_pos,
 			zoom   = 4,
 		}
