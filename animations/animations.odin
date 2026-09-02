@@ -51,8 +51,8 @@ draw_animation :: proc(a: Animation, pos: rl.Vector2, flip: bool) {
 	dest := rl.Rectangle {
 		x      = pos.x,
 		y      = pos.y,
-		width  = a_width * 4 / f32(a.num_frames),
-		height = a_height * 4,
+		width  = a_width / f32(a.num_frames),
+		height = a_height,
 	}
 
 	rl.DrawTexturePro(a.texture, source, dest, {dest.width / 2, dest.height}, 0, rl.WHITE)

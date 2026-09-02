@@ -17,6 +17,7 @@ main :: proc() {
 	// rl.SetWindowState({.WINDOW_RESIZABLE})
 	rl.SetTargetFPS(240)
 	player_pos := rl.Vector2{f32(rl.GetScreenWidth() / 2), f32(rl.GetScreenHeight() / 2)}
+	camera_pos := rl.Vector2{f32(rl.GetScreenWidth() / 2), f32(rl.GetScreenHeight() / 2)}
 	player_vel: rl.Vector2
 	player_flip: bool
 	player_direction: Direction
@@ -31,24 +32,36 @@ main :: proc() {
 		rl.ClearBackground({110, 184, 168, 255})
 
 
-		if rl.IsKeyDown(.A) {
-			player_vel.x = -400
+		if rl.IsKeyDown(.LEFT) {
+			player_vel.x = -200
 			player_direction = .Left
-		} else if rl.IsKeyDown(.D) {
-			player_vel.x = 400
+		} else if rl.IsKeyDown(.RIGHT) {
+			player_vel.x = 200
 			player_direction = .Right
 		} else {
 			player_vel.x = 0
 		}
 
-		if rl.IsKeyDown(.W) {
-			player_vel.y = -400
+		if rl.IsKeyDown(.UP) {
+			player_vel.y = -200
 			player_direction = .Up
-		} else if rl.IsKeyDown(.S) {
-			player_vel.y = 400
+		} else if rl.IsKeyDown(.DOWN) {
+			player_vel.y = 200
 			player_direction = .Down
 		} else {
 			player_vel.y = 0
+		}
+
+		if rl.IsKeyDown(.A) {
+			camera_pos.x += -200 * rl.GetFrameTime()
+		} else if rl.IsKeyDown(.D) {
+			camera_pos.x += 200 * rl.GetFrameTime()
+		}
+
+		if rl.IsKeyDown(.W) {
+			camera_pos.y += -200 * rl.GetFrameTime()
+		} else if rl.IsKeyDown(.S) {
+			camera_pos.y += 200 * rl.GetFrameTime()
 		}
 
 		player_is_moving = player_vel.x != 0 || player_vel.y != 0
@@ -84,34 +97,31 @@ main :: proc() {
 		// diagonal speed normalisation probably done really shittly and not even accurate tbh
 		if player_vel.x != 0 && player_vel.y != 0 {
 			if player_vel.x < 0 {
-				player_vel.x = -250
+				player_vel.x = -150
 			} else {
-				player_vel.x = 250
+				player_vel.x = 150
 			}
 
 			if player_vel.y < 0 {
-				player_vel.y = -250
+				player_vel.y = -150
 			} else {
-				player_vel.y = 250
+				player_vel.y = 150
 			}
 		}
 
 		player_pos += player_vel * rl.GetFrameTime()
 
-
 		camera := rl.Camera2D {
 			offset = {f32(rl.GetScreenWidth() / 2), f32(rl.GetScreenHeight() / 2)},
+			target = camera_pos,
 			zoom   = 4,
 		}
 
-
 		rl.BeginMode2D(camera)
 		level.draw_level(&level_grid)
-		rl.EndMode2D()
-
 		animations.update_animation(&current_anim)
 		animations.draw_animation(current_anim, player_pos, player_flip)
-
+		rl.EndMode2D()
 
 		rl.EndDrawing()
 	}
