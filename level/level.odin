@@ -69,15 +69,15 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 
 		if grass_count >= 35 {
 			pass = true
-      fmt.printfln("Using seed: %d", seed^)
+			fmt.printfln("Using seed: %d", seed^)
 			break
 		} else {
-      fmt.printfln("Seed: %d didn't work, incrementing seed...", seed^)
+			fmt.printfln("Seed: %d didn't work, incrementing seed...", seed^)
 			seed^ += 1
 		}
 	}
 
-  // Forces 7x7 grass land on spawn after 3 seed retries
+	// Forces 7x7 grass land on spawn after 3 seed retries
 	if !pass {
 		mid_x := width / 2
 		mid_y := height / 2
@@ -89,7 +89,7 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 		}
 	}
 
-  return level
+	return level
 }
 
 draw_level :: proc(level: ^Level) {
