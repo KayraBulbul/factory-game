@@ -8,6 +8,10 @@ TileType :: enum {
 	Water,
 	Grass,
 	Mountain,
+	IronOre,
+	CopperOre,
+	Tree,
+	Air,
 }
 
 Tile :: struct {
@@ -32,6 +36,14 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 	water := rl.LoadTexture("../assets/water.png")
 	grass := rl.LoadTexture("../assets/grass.png")
 	mountain := rl.LoadTexture("../assets/mountain.png")
+	sandR := rl.LoadTexture("../assets/grassSandBlendR.png")
+	sandL := rl.LoadTexture("../assets/grassSandBlendL.png")
+	sandB := rl.LoadTexture("../assets/grassSandBlendB.png")
+	sandT := rl.LoadTexture("../assets/grassSandBlendT.png")
+	sandTR := rl.LoadTexture("../assets/GrassSandBlendTR.png")
+	sandBR := rl.LoadTexture("../assets/grassSandBlendBR.png")
+  sandBL := rl.LoadTexture("../assets/grassSandBlendBL.png")
+  sandTL := rl.LoadTexture("../assets/grassSandBlendTL.png")
 	pass: bool
 
 	for i in 0 ..< 3 {
@@ -85,6 +97,48 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 			for x in mid_x - 3 ..< mid_x + 4 {
 				level.tiles[y * width + x].type = .Grass
 				level.tiles[y * width + x].texture = grass
+			}
+		}
+	}
+
+	for y in 0 ..< level.height {
+		for x in 0 ..< level.width {
+			right := level.tiles[y * level.width + (x + 1 if x + 1 < level.width else x)]
+			left := level.tiles[y * level.width + (x - 1 if x - 1 > 0 else x)]
+			bottom := level.tiles[(y + 1 if y + 1 < level.height else y) * level.width + x]
+			top := level.tiles[(y - 1 if y - 1 > 0 else y) * level.width + x]
+
+			if right.type == .Water && level.tiles[y * level.width + x].type == .Grass {
+				level.tiles[y * level.width + x].texture = sandR
+			}
+			if left.type == .Water && level.tiles[y * level.width + x].type == .Grass {
+				level.tiles[y * level.width + x].texture = sandL
+			}
+			if bottom.type == .Water && level.tiles[y * level.width + x].type == .Grass {
+				level.tiles[y * level.width + x].texture = sandB
+			}
+			if top.type == .Water && level.tiles[y * level.width + x].type == .Grass {
+				level.tiles[y * level.width + x].texture = sandT
+			}
+			if top.type == .Water &&
+			   right.type == .Water &&
+			   level.tiles[y * level.width + x].type == .Grass {
+				level.tiles[y * level.width + x].texture = sandTR
+			}
+			if bottom.type == .Water &&
+			   right.type == .Water &&
+			   level.tiles[y * level.width + x].type == .Grass {
+				level.tiles[y * level.width + x].texture = sandBR
+			}
+			if bottom.type == .Water &&
+			   left.type == .Water &&
+			   level.tiles[y * level.width + x].type == .Grass {
+				level.tiles[y * level.width + x].texture = sandBL
+			}
+			if top.type == .Water &&
+			   left.type == .Water &&
+			   level.tiles[y * level.width + x].type == .Grass {
+				level.tiles[y * level.width + x].texture = sandTL
 			}
 		}
 	}

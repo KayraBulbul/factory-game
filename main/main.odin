@@ -27,7 +27,8 @@ main :: proc() {
 
 	animations.init()
 	seed: i64 = 12345
-	level_grid := level.create_level_grid(128, 128, &seed)
+	level_grid := level.create_level_grid(256, 256, &seed)
+	resource_grid := level.create_resource_map(256, 256, &seed)
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
@@ -141,6 +142,7 @@ main :: proc() {
 		}
 
 		level.draw_level(&level_grid)
+		level.draw_resources(&resource_grid, &level_grid)
 		animations.update_animation(&current_anim)
 		animations.draw_animation(current_anim, player_pos, player_flip)
 		rl.EndMode2D()
