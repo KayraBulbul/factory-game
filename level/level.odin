@@ -149,26 +149,40 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 				if west {
 					tile.mask += {.West}
 				}
-			        // odinfmt: disable
-        switch tile.mask {
-        case {}: // Grass
-        case {.North}: tile.texture = sandT
-        case {.East}:  tile.texture = sandR
-        case {.South}: tile.texture = sandB
-        case {.West}:  tile.texture = sandL
-        case {.North, .East}:  tile.texture = sandTR
-        case {.North, .West}:  tile.texture = sandTL
-        case {.North, .South}: tile.texture = sandTB
-        case {.East, .West}:   tile.texture = sandRL
-        case {.East, .South}:  tile.texture = sandBR
-        case {.West, .South}:  tile.texture = sandBL
-        case {.North, .East, .West}:  tile.texture = sandTRL
-        case {.North, .East, .South}: tile.texture = sandTRB
-        case {.North, .West, .South}: tile.texture = sandTLB
-        case {.South, .East, .West}:  tile.texture = sandRBL
-        case {.North, .East, .South, .West}: tile.texture = sandALL
-        }
-        // odinfmt: enable
+
+				switch tile.mask {
+				case {}: // Grass
+				case {.North}:
+					tile.texture = sandT
+				case {.East}:
+					tile.texture = sandR
+				case {.South}:
+					tile.texture = sandB
+				case {.West}:
+					tile.texture = sandL
+				case {.North, .East}:
+					tile.texture = sandTR
+				case {.North, .West}:
+					tile.texture = sandTL
+				case {.North, .South}:
+					tile.texture = sandTB
+				case {.East, .West}:
+					tile.texture = sandRL
+				case {.East, .South}:
+					tile.texture = sandBR
+				case {.West, .South}:
+					tile.texture = sandBL
+				case {.North, .East, .West}:
+					tile.texture = sandTRL
+				case {.North, .East, .South}:
+					tile.texture = sandTRB
+				case {.North, .West, .South}:
+					tile.texture = sandTLB
+				case {.South, .East, .West}:
+					tile.texture = sandRBL
+				case {.North, .East, .South, .West}:
+					tile.texture = sandALL
+				}
 			}
 		}
 	}
