@@ -135,22 +135,21 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 				.Water
 			north := level.tiles[(y - 1 if y - 1 > 0 else y) * level.width + x].type == .Water
 
-			if east {
-				tile.mask += {.East}
-			}
-			if north {
-				tile.mask += {.North}
-			}
-			if south {
-				tile.mask += {.South}
-			}
-			if west {
-				tile.mask += {.West}
-			}
-
 
 			if tile.type == .Grass {
-        // odinfmt: disable
+				if east {
+					tile.mask += {.East}
+				}
+				if north {
+					tile.mask += {.North}
+				}
+				if south {
+					tile.mask += {.South}
+				}
+				if west {
+					tile.mask += {.West}
+				}
+			        // odinfmt: disable
         switch tile.mask {
         case {}: // Grass
         case {.North}: tile.texture = sandT
