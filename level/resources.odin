@@ -20,42 +20,40 @@ create_resource_map :: proc(width, height: int, seed: ^i64) -> Level {
 	pass: bool
 
 
-	for i in 0 ..< 3 {
-		for y in 0 ..< height {
-			for x in 0 ..< width {
-				value := noise.noise_2d(seed^, [2]f64{f64(x) * noise_scale, f64(y) * noise_scale})
-	      randVal := rand.int_range(0, 10)
+	for y in 0 ..< height {
+		for x in 0 ..< width {
+			value := noise.noise_2d(seed^, [2]f64{f64(x) * noise_scale, f64(y) * noise_scale})
+			randVal := rand.int_range(0, 10)
 
-				tile: Tile
-				if value < 0.8 {
-					if randVal > 8 {
-						tile.type = .Tree
-						tile.texture = tree
-					} else {
-						tile.type = .Air
-						tile.texture = air
-					}
-				} else if value < 0.85 {
-					if randVal >= 7 {
-						tile.type = .CopperOre
-						tile.texture = copperOre
-					} else {
-						tile.type = .Air
-						tile.texture = air
-					}
+			tile: Tile
+			if value < 0.8 {
+				if randVal > 8 {
+					tile.type = .Tree
+					tile.texture = tree
 				} else {
-					if randVal >= 7 {
-						tile.type = .IronOre
-						tile.texture = ironOre
-					} else {
-						tile.type = .Air
-						tile.texture = air
-					}
+					tile.type = .Air
+					tile.texture = air
 				}
-
-				// Converts 2D position to 1D array
-				resources.tiles[y * width + x] = tile
+			} else if value < 0.85 {
+				if randVal >= 7 {
+					tile.type = .CopperOre
+					tile.texture = copperOre
+				} else {
+					tile.type = .Air
+					tile.texture = air
+				}
+			} else {
+				if randVal >= 7 {
+					tile.type = .IronOre
+					tile.texture = ironOre
+				} else {
+					tile.type = .Air
+					tile.texture = air
+				}
 			}
+
+			// Converts 2D position to 1D array
+			resources.tiles[y * width + x] = tile
 		}
 	}
 
