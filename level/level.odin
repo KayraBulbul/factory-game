@@ -17,6 +17,7 @@ TileType :: enum {
 Tile :: struct {
 	texture: rl.Texture2D,
 	type:    TileType,
+	mask:    Bearing_Mask,
 }
 
 Level :: struct {
@@ -24,6 +25,15 @@ Level :: struct {
 	height: int,
 	tiles:  [dynamic]Tile,
 }
+
+Bearing :: enum {
+	North,
+	East,
+	South,
+	West,
+}
+
+Bearing_Mask :: bit_set[Bearing;u8]
 
 create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 	level := Level {
@@ -36,14 +46,26 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 	water := rl.LoadTexture("../assets/water.png")
 	grass := rl.LoadTexture("../assets/grass.png")
 	mountain := rl.LoadTexture("../assets/mountain.png")
+
 	sandR := rl.LoadTexture("../assets/grassSandBlendR.png")
 	sandL := rl.LoadTexture("../assets/grassSandBlendL.png")
 	sandB := rl.LoadTexture("../assets/grassSandBlendB.png")
 	sandT := rl.LoadTexture("../assets/grassSandBlendT.png")
-	sandTR := rl.LoadTexture("../assets/GrassSandBlendTR.png")
+
+	sandTR := rl.LoadTexture("../assets/grassSandBlendTR.png")
 	sandBR := rl.LoadTexture("../assets/grassSandBlendBR.png")
-  sandBL := rl.LoadTexture("../assets/grassSandBlendBL.png")
-  sandTL := rl.LoadTexture("../assets/grassSandBlendTL.png")
+	sandBL := rl.LoadTexture("../assets/grassSandBlendBL.png")
+	sandTL := rl.LoadTexture("../assets/grassSandBlendTL.png")
+	sandTB := rl.LoadTexture("../assets/grassSandBlendTB.png")
+	sandRL := rl.LoadTexture("../assets/grassSandBlendRL.png")
+
+	sandTRL := rl.LoadTexture("../assets/grassSandBlendTRL.png")
+	sandTRB := rl.LoadTexture("../assets/grassSandBlendTRB.png")
+	sandTLB := rl.LoadTexture("../assets/grassSandBlendTLB.png")
+	sandRBL := rl.LoadTexture("../assets/grassSandBlendRBL.png")
+
+	sandALL := rl.LoadTexture("../assets/grassSandBlendALL.png")
+
 	pass: bool
 
 	for i in 0 ..< 3 {
@@ -103,45 +125,55 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 
 	for y in 0 ..< level.height {
 		for x in 0 ..< level.width {
-			right := level.tiles[y * level.width + (x + 1 if x + 1 < level.width else x)]
-			left := level.tiles[y * level.width + (x - 1 if x - 1 > 0 else x)]
-			bottom := level.tiles[(y + 1 if y + 1 < level.height else y) * level.width + x]
-			top := level.tiles[(y - 1 if y - 1 > 0 else y) * level.width + x]
+			tile := &level.tiles[y * level.width + x]
 
-			if right.type == .Water && level.tiles[y * level.width + x].type == .Grass {
-				level.tiles[y * level.width + x].texture = sandR
+			east :=
+				level.tiles[y * level.width + (x + 1 if x + 1 < level.width else x)].type == .Water
+			west := level.tiles[y * level.width + (x - 1 if x - 1 > 0 else x)].type == .Water
+			south :=
+				level.tiles[(y + 1 if y + 1 < level.height else y) * level.width + x].type ==
+				.Water
+			north := level.tiles[(y - 1 if y - 1 > 0 else y) * level.width + x].type == .Water
+
+			if east {
+				tile.mask += {.East}
 			}
-			if left.type == .Water && level.tiles[y * level.width + x].type == .Grass {
-				level.tiles[y * level.width + x].texture = sandL
+			if north {
+				tile.mask += {.North}
 			}
-			if bottom.type == .Water && level.tiles[y * level.width + x].type == .Grass {
-				level.tiles[y * level.width + x].texture = sandB
+			if south {
+				tile.mask += {.South}
 			}
-			if top.type == .Water && level.tiles[y * level.width + x].type == .Grass {
-				level.tiles[y * level.width + x].texture = sandT
+			if west {
+				tile.mask += {.West}
 			}
-			if top.type == .Water &&
-			   right.type == .Water &&
-			   level.tiles[y * level.width + x].type == .Grass {
-				level.tiles[y * level.width + x].texture = sandTR
-			}
-			if bottom.type == .Water &&
-			   right.type == .Water &&
-			   level.tiles[y * level.width + x].type == .Grass {
-				level.tiles[y * level.width + x].texture = sandBR
-			}
-			if bottom.type == .Water &&
-			   left.type == .Water &&
-			   level.tiles[y * level.width + x].type == .Grass {
-				level.tiles[y * level.width + x].texture = sandBL
-			}
-			if top.type == .Water &&
-			   left.type == .Water &&
-			   level.tiles[y * level.width + x].type == .Grass {
-				level.tiles[y * level.width + x].texture = sandTL
+
+
+			if tile.type == .Grass {
+        // odinfmt: disable
+        switch tile.mask {
+        case {}: // Grass
+        case {.North}: tile.texture = sandT
+        case {.East}:  tile.texture = sandR
+        case {.South}: tile.texture = sandB
+        case {.West}:  tile.texture = sandL
+        case {.North, .East}:  tile.texture = sandTR
+        case {.North, .West}:  tile.texture = sandTL
+        case {.North, .South}: tile.texture = sandTB
+        case {.East, .West}:   tile.texture = sandRL
+        case {.East, .South}:  tile.texture = sandBR
+        case {.West, .South}:  tile.texture = sandBL
+        case {.North, .East, .West}:  tile.texture = sandTRL
+        case {.North, .East, .South}: tile.texture = sandTRB
+        case {.North, .West, .South}: tile.texture = sandTLB
+        case {.South, .East, .West}:  tile.texture = sandRBL
+        case {.North, .East, .South, .West}: tile.texture = sandALL
+        }
+        // odinfmt: enable
 			}
 		}
 	}
+
 
 	return level
 }
