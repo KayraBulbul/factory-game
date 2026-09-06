@@ -24,6 +24,7 @@ main :: proc() {
 	player_is_moving: bool
 	current_anim: animations.Animation
 	camera_attached := true
+  curr_camera: rl.Camera2D
 
 	animations.init()
 	seed: i64 = 12345
@@ -139,12 +140,14 @@ main :: proc() {
 
 		if camera_attached {
 			rl.BeginMode2D(attachedCamera)
+      curr_camera = attachedCamera
 		} else {
 			rl.BeginMode2D(detachedCamera)
+      curr_camera = detachedCamera
 		}
 
-		level.draw_level(&level_grid)
-		level.draw_resources(&resource_grid, &level_grid)
+		level.draw_level(&level_grid, curr_camera)
+		level.draw_resources(&resource_grid, &level_grid, curr_camera)
 		animations.update_animation(&current_anim)
 		animations.draw_animation(current_anim, player_pos, player_flip)
 		rl.EndMode2D()

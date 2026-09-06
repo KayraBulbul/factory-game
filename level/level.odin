@@ -1,6 +1,7 @@
 package level
 
 import "core:fmt"
+import "core:math"
 import "core:math/noise"
 import rl "vendor:raylib"
 
@@ -133,7 +134,6 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 					.Water
 				north := level.tiles[(y - 1 if y - 1 >= 0 else y) * level.width + x].type == .Water
 
-
 				if east {
 					tile.mask += {.East}
 				}
@@ -187,14 +187,31 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 	return level
 }
 
-draw_level :: proc(level: ^Level) {
+draw_level :: proc(level: ^Level, curr_camera: rl.Camera2D) {
 	TILE_SIZE :: 16
 
 	worldWidth := level.width * TILE_SIZE
 	worldHeight := level.height * TILE_SIZE
 
-	for y in 0 ..< level.height {
-		for x in 0 ..< level.width {
+	visableWidth := f32(rl.GetScreenWidth()) / curr_camera.zoom
+	visableHeight := f32(rl.GetScreenHeight()) / curr_camera.zoom
+
+	camera_left := curr_camera.target.x - visableWidth / 2
+	camera_top := curr_camera.target.y - visableHeight / 2
+	camera_right := curr_camera.target.x + visableWidth / 2
+	camera_bot := curr_camera.target.y + visableHeight / 2
+	starting_x := math.floor((camera_left + f32(worldWidth) / 2) / TILE_SIZE)
+	starting_y := math.floor((camera_top + f32(worldHeight) / 2) / TILE_SIZE)
+	ending_x := math.ceil((camera_right + f32(worldWidth) / 2) / TILE_SIZE)
+	ending_y := math.ceil((camera_bot + f32(worldHeight) / 2) / TILE_SIZE)
+
+	if starting_x < 0 do starting_x = 0
+	if starting_y < 0 do starting_y = 0
+	if ending_x > 256 do ending_x = 256
+	if ending_y > 256 do ending_y = 256
+
+	for y in int(starting_y) ..< int(ending_y) {
+		for x in int(starting_x) ..< int(ending_x) {
 			tile := level.tiles[y * level.width + x]
 
 			world_x := x * TILE_SIZE - worldWidth / 2

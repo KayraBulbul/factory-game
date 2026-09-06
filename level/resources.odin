@@ -1,5 +1,6 @@
 package level
 
+import "core:math"
 import "core:math/noise"
 import "core:math/rand"
 import rl "vendor:raylib"
@@ -67,17 +68,30 @@ create_resource_map :: proc(width, height: int, seed: ^i64) -> ResourceMap {
 	return resources
 }
 
-draw_resources :: proc(resourceGrid: ^ResourceMap, level: ^Level) {
+draw_resources :: proc(resourceGrid: ^ResourceMap, level: ^Level, curr_camera: rl.Camera2D) {
 	TILE_SIZE :: 16
 
-  assert(resourceGrid.height == level.height)
-  assert(resourceGrid.width == level.width)
+	assert(resourceGrid.height == level.height)
+	assert(resourceGrid.width == level.width)
 
 	worldWidth := resourceGrid.width * TILE_SIZE
 	worldHeight := resourceGrid.height * TILE_SIZE
 
-	for y in 0 ..< resourceGrid.height {
-		for x in 0 ..< resourceGrid.width {
+	visableWidth := f32(rl.GetScreenWidth()) / curr_camera.zoom
+	visableHeight := f32(rl.GetScreenHeight()) / curr_camera.zoom
+
+	camera_left := curr_camera.target.x - visableWidth / 2
+	camera_top := curr_camera.target.y - visableHeight / 2
+	camera_right := curr_camera.target.x + visableWidth / 2
+	camera_bot := curr_camera.target.y + visableHeight / 2
+	starting_x := math.floor((camera_left + f32(worldWidth) / 2) / TILE_SIZE)
+	starting_y := math.floor((camera_top + f32(worldHeight) / 2) / TILE_SIZE)
+	ending_x := math.ceil((camera_right + f32(worldWidth) / 2) / TILE_SIZE)
+	ending_y := math.ceil((camera_bot + f32(worldHeight) / 2) / TILE_SIZE)
+
+
+	for y in int(starting_y) ..< int(ending_y) {
+		for x in int(starting_x) ..< int(ending_x) {
 			resourceTile := resourceGrid.tiles[y * level.width + x]
 			levelTile := level.tiles[y * level.width + x]
 
