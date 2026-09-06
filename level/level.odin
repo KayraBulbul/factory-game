@@ -129,13 +129,13 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 
 			if tile.type == .Grass {
 				east :=
-					level.tiles[y * level.width + (x + 1 if x + 1 < level.width else x)].type ==
+					level.tiles[y * level.width + (x + 1 if x + 1 <= level.width else x)].type ==
 					.Water
-				west := level.tiles[y * level.width + (x - 1 if x - 1 > 0 else x)].type == .Water
+				west := level.tiles[y * level.width + (x - 1 if x - 1 >= 0 else x)].type == .Water
 				south :=
-					level.tiles[(y + 1 if y + 1 < level.height else y) * level.width + x].type ==
+					level.tiles[(y + 1 if y + 1 <= level.height else y) * level.width + x].type ==
 					.Water
-				north := level.tiles[(y - 1 if y - 1 > 0 else y) * level.width + x].type == .Water
+				north := level.tiles[(y - 1 if y - 1 >= 0 else y) * level.width + x].type == .Water
 
 
 				if east {
