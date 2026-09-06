@@ -8,7 +8,6 @@ ResourceType :: enum {
 	IronOre,
 	CopperOre,
 	Tree,
-	Air,
 }
 
 ResourceTile :: struct {
@@ -34,7 +33,6 @@ create_resource_map :: proc(width, height: int, seed: ^i64) -> ResourceMap {
 	tree := rl.LoadTexture("../assets/tree.png")
 	ironOre := rl.LoadTexture("../assets/iron_ore.png")
 	copperOre := rl.LoadTexture("../assets/copper_ore.png")
-	air := rl.LoadTexture("../assets/air.png")
 	pass: bool
 
 
@@ -48,25 +46,16 @@ create_resource_map :: proc(width, height: int, seed: ^i64) -> ResourceMap {
 				if randVal > 8 {
 					tile.type = .Tree
 					tile.texture = tree
-				} else {
-					tile.type = .Air
-					tile.texture = air
 				}
 			} else if value < 0.85 {
 				if randVal >= 7 {
 					tile.type = .CopperOre
 					tile.texture = copperOre
-				} else {
-					tile.type = .Air
-					tile.texture = air
 				}
 			} else {
 				if randVal >= 7 {
 					tile.type = .IronOre
 					tile.texture = ironOre
-				} else {
-					tile.type = .Air
-					tile.texture = air
 				}
 			}
 
