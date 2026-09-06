@@ -8,13 +8,9 @@ TileType :: enum {
 	Water,
 	Grass,
 	Mountain,
-	IronOre,
-	CopperOre,
-	Tree,
-	Air,
 }
 
-Tile :: struct {
+TerrainTile :: struct {
 	texture: rl.Texture2D,
 	type:    TileType,
 	mask:    Bearing_Mask,
@@ -23,7 +19,7 @@ Tile :: struct {
 Level :: struct {
 	width:  int,
 	height: int,
-	tiles:  [dynamic]Tile,
+	tiles:  [dynamic]TerrainTile,
 }
 
 Bearing :: enum {
@@ -39,7 +35,7 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 	level := Level {
 		width  = width,
 		height = height,
-		tiles  = make([dynamic]Tile, width * height),
+		tiles  = make([dynamic]TerrainTile, width * height),
 	}
 
 	noise_scale: f64 = 0.02
@@ -73,7 +69,7 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 			for x in 0 ..< width {
 				value := noise.noise_2d(seed^, [2]f64{f64(x) * noise_scale, f64(y) * noise_scale})
 
-				tile: Tile
+				tile: TerrainTile
 				if value < -0.02 {
 					tile.type = .Water
 					tile.texture = water
@@ -129,11 +125,11 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 
 			if tile.type == .Grass {
 				east :=
-					level.tiles[y * level.width + (x + 1 if x + 1 <= level.width else x)].type ==
+					level.tiles[y * level.width + (x + 1 if x + 1 < level.width else x)].type ==
 					.Water
 				west := level.tiles[y * level.width + (x - 1 if x - 1 >= 0 else x)].type == .Water
 				south :=
-					level.tiles[(y + 1 if y + 1 <= level.height else y) * level.width + x].type ==
+					level.tiles[(y + 1 if y + 1 < level.height else y) * level.width + x].type ==
 					.Water
 				north := level.tiles[(y - 1 if y - 1 >= 0 else y) * level.width + x].type == .Water
 

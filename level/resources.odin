@@ -4,12 +4,30 @@ import "core:math/noise"
 import "core:math/rand"
 import rl "vendor:raylib"
 
+ResourceType :: enum {
+	IronOre,
+	CopperOre,
+	Tree,
+	Air,
+}
 
-create_resource_map :: proc(width, height: int, seed: ^i64) -> Level {
-	resources := Level {
+ResourceTile :: struct {
+	texture: rl.Texture2D,
+	type:    ResourceType,
+	mask:    Bearing_Mask,
+}
+
+ResourceMap :: struct {
+	width:  int,
+	height: int,
+	tiles:  [dynamic]ResourceTile,
+}
+
+create_resource_map :: proc(width, height: int, seed: ^i64) -> ResourceMap {
+	resources := ResourceMap {
 		width  = width,
 		height = height,
-		tiles  = make([dynamic]Tile, width * height),
+		tiles  = make([dynamic]ResourceTile, width * height),
 	}
 
 	noise_scale: f64 = 0.02
@@ -25,7 +43,7 @@ create_resource_map :: proc(width, height: int, seed: ^i64) -> Level {
 			value := noise.noise_2d(seed^, [2]f64{f64(x) * noise_scale, f64(y) * noise_scale})
 			randVal := rand.int_range(0, 10)
 
-			tile: Tile
+			tile: ResourceTile
 			if value < 0.8 {
 				if randVal > 8 {
 					tile.type = .Tree
@@ -60,8 +78,11 @@ create_resource_map :: proc(width, height: int, seed: ^i64) -> Level {
 	return resources
 }
 
-draw_resources :: proc(resourceGrid, level: ^Level) {
+draw_resources :: proc(resourceGrid: ^ResourceMap, level: ^Level) {
 	TILE_SIZE :: 16
+
+  assert(resourceGrid.height == level.height)
+  assert(resourceGrid.width == level.width)
 
 	worldWidth := resourceGrid.width * TILE_SIZE
 	worldHeight := resourceGrid.height * TILE_SIZE

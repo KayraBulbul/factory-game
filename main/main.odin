@@ -27,8 +27,10 @@ main :: proc() {
 
 	animations.init()
 	seed: i64 = 12345
-	level_grid := level.create_level_grid(256, 256, &seed)
-	resource_grid := level.create_resource_map(256, 256, &seed)
+  level_height := 256
+  level_width := 256
+	level_grid := level.create_level_grid(level_width, level_height, &seed)
+	resource_grid := level.create_resource_map(level_width, level_height, &seed)
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
