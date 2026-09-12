@@ -89,6 +89,10 @@ draw_resources :: proc(resourceGrid: ^ResourceMap, level: ^Level, curr_camera: r
 	ending_x := math.ceil((camera_right + f32(worldWidth) / 2) / TILE_SIZE)
 	ending_y := math.ceil((camera_bot + f32(worldHeight) / 2) / TILE_SIZE)
 
+	if starting_x < 0 do starting_x = 0
+	if starting_y < 0 do starting_y = 0
+	if ending_x > 256 do ending_x = f32(level.width)
+	if ending_y > 256 do ending_y = f32(level.height)
 
 	for y in int(starting_y) ..< int(ending_y) {
 		for x in int(starting_x) ..< int(ending_x) {

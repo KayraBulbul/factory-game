@@ -1,5 +1,6 @@
 package main
 
+import "core:math"
 import rl "vendor:raylib"
 
 import animations "../animations"
@@ -12,6 +13,31 @@ Direction :: enum {
 	Right,
 }
 
+touches_water :: proc(grid: ^level.Level, collider: rl.Rectangle) -> bool {
+	half_width := f32(grid.width * 16) / 2
+	half_height := f32(grid.height * 16) / 2
+
+	left := int(math.floor((collider.x + half_width) / 16))
+	right := int(math.floor((collider.x + collider.width + half_width) / 16))
+	top := int(math.floor((collider.y + half_height) / 16))
+	bottom := int(math.floor((collider.y + collider.height + half_height) / 16))
+
+	for y in top ..< bottom + 1 {
+		for x in left ..< right + 1 {
+			if x < 0 || x >= grid.width || y < 0 || y >= grid.height {
+				continue
+			}
+
+			tile := grid.tiles[y * grid.width + x]
+			if tile.type == .Water && rl.CheckCollisionRecs(collider, tile.collider) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 main :: proc() {
 	rl.InitWindow(1920, 1080, "Factory Game")
 	rl.SetWindowState({.WINDOW_RESIZABLE})
@@ -22,14 +48,14 @@ main :: proc() {
 	player_flip: bool
 	player_direction: Direction
 	player_is_moving: bool
-	current_anim: animations.Animation
 	camera_attached := true
-  curr_camera: rl.Camera2D
+	curr_camera: rl.Camera2D
 
 	animations.init()
+	current_anim := animations.player_idle
 	seed: i64 = 12345
-  level_height := 256
-  level_width := 256
+	level_height := 256
+	level_width := 256
 	level_grid := level.create_level_grid(level_width, level_height, &seed)
 	resource_grid := level.create_resource_map(level_width, level_height, &seed)
 
@@ -37,6 +63,12 @@ main :: proc() {
 		rl.BeginDrawing()
 		rl.ClearBackground({110, 184, 168, 255})
 
+		player_collider := rl.Rectangle {
+			player_pos.x - f32(current_anim.texture.height / 2),
+			player_pos.y - f32(current_anim.texture.height / 4),
+			f32(int(current_anim.texture.width) / current_anim.num_frames),
+			f32(current_anim.texture.height / 4),
+		}
 
 		// Player Movement
 		if rl.IsKeyDown(.LEFT) {
@@ -110,22 +142,29 @@ main :: proc() {
 			player_flip = false
 		}
 
-		// diagonal speed normalisation probably done really shittly and not even accurate tbh
 		if player_vel.x != 0 && player_vel.y != 0 {
-			if player_vel.x < 0 {
-				player_vel.x = -100
-			} else {
-				player_vel.x = 100
-			}
-
-			if player_vel.y < 0 {
-				player_vel.y = -100
-			} else {
-				player_vel.y = 100
-			}
+			player_vel *= 0.70710678
 		}
 
-		player_pos += player_vel * rl.GetFrameTime()
+		old_x := player_collider.x
+		player_collider.x += player_vel.x * rl.GetFrameTime()
+
+		if touches_water(&level_grid, player_collider) {
+			player_collider.x = old_x
+			player_vel.x = 0
+		} else {
+			player_pos.x += player_vel.x * rl.GetFrameTime()
+		}
+
+		old_y := player_collider.y
+		player_collider.y += player_vel.y * rl.GetFrameTime()
+
+		if touches_water(&level_grid, player_collider) {
+			player_collider.y = old_y
+			player_vel.y = 0
+		} else {
+			player_pos.y += player_vel.y * rl.GetFrameTime()
+		}
 
 		detachedCamera := rl.Camera2D {
 			offset = {f32(rl.GetScreenWidth() / 2), f32(rl.GetScreenHeight() / 2)},
@@ -140,16 +179,17 @@ main :: proc() {
 
 		if camera_attached {
 			rl.BeginMode2D(attachedCamera)
-      curr_camera = attachedCamera
+			curr_camera = attachedCamera
 		} else {
 			rl.BeginMode2D(detachedCamera)
-      curr_camera = detachedCamera
+			curr_camera = detachedCamera
 		}
 
 		level.draw_level(&level_grid, curr_camera)
 		level.draw_resources(&resource_grid, &level_grid, curr_camera)
 		animations.update_animation(&current_anim)
 		animations.draw_animation(current_anim, player_pos, player_flip)
+		rl.DrawRectangleRec(player_collider, {0, 255, 0, 100})
 		rl.EndMode2D()
 
 		rl.EndDrawing()

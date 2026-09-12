@@ -12,9 +12,10 @@ TileType :: enum {
 }
 
 TerrainTile :: struct {
-	texture: rl.Texture2D,
-	type:    TileType,
-	mask:    Bearing_Mask,
+	texture:  rl.Texture2D,
+	type:     TileType,
+	mask:     Bearing_Mask,
+	collider: rl.Rectangle,
 }
 
 Level :: struct {
@@ -74,6 +75,12 @@ create_level_grid :: proc(width, height: int, seed: ^i64) -> Level {
 				if value < -0.02 {
 					tile.type = .Water
 					tile.texture = water
+					tile.collider = rl.Rectangle {
+						f32(x * 16 - width * 16 / 2),
+						f32(y * 16 - height * 16 / 2),
+						f32(tile.texture.width),
+						f32(tile.texture.height),
+					}
 				} else if value < 0.90 {
 					tile.type = .Grass
 					tile.texture = grass
@@ -207,8 +214,8 @@ draw_level :: proc(level: ^Level, curr_camera: rl.Camera2D) {
 
 	if starting_x < 0 do starting_x = 0
 	if starting_y < 0 do starting_y = 0
-	if ending_x > 256 do ending_x = 256
-	if ending_y > 256 do ending_y = 256
+	if ending_x > 256 do ending_x = f32(level.width)
+	if ending_y > 256 do ending_y = f32(level.height)
 
 	for y in int(starting_y) ..< int(ending_y) {
 		for x in int(starting_x) ..< int(ending_x) {
